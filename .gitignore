@@ -1,2 +1,3 @@
 venv
 yolov4-ANPR.weights
+__pycache__
