@@ -18,9 +18,8 @@ agnostic_nms = False  # class-agnostic NMS
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 ckpt = torch.load(MODEL_PATH, map_location=device)
 model = ckpt['ema' if ckpt.get('ema') else 'model'].float().fuse().eval()
-class_names = ['횡단보도', '빨간불', '초록불'] # model.names
+class_names = ['횡단보도'] # model.names
 stride = int(model.stride.max())
-colors = ((50, 50, 50), (0, 0, 255), (0, 255, 0)) # (gray, red, green)
 
 # 차량,번호판 모델
 CONFIDENCE = 0.5
@@ -94,7 +93,7 @@ while cap.isOpened():
         class_name = class_names[int(p[5])]
         x1, y1, x2, y2 = p[:4]
 
-        annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100), color=colors[int(p[5])])
+        annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100))
 
         if class_name == '횡단보도':
             cw_x1, cw_x2 = x1, x2
