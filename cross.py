@@ -107,7 +107,7 @@ while cap.isOpened():
         alert_text = '' #TTS떄 가져올 부분
         color = (255, 0, 0) # blue
 
-        if class_name == '차량':
+        if class_name == '차량': #횡단보도 위에서 빨간색으로 박스치게 바꿔야함
             if (x1+w) < (cw_x1): # 왼쪽 차량
                 alert_text = str(cw_x1 - (x1+w)) + 'm 왼쪽 방향 '
                 color = (0, 0, 255)
