@@ -30,7 +30,7 @@ LABELS = ['차량', '번호판']
 net = cv2.dnn.readNetFromDarknet('models/yolov4-ANPR.cfg', 'models/yolov4-ANPR.weights')
 
 # 동영상 로드
-cap = cv2.VideoCapture('data/sample.mp4')
+cap = cv2.VideoCapture('data/full3.mp4')
 
 fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 out = cv2.VideoWriter('data/output.mp4', fourcc, cap.get(cv2.CAP_PROP_FPS), (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
@@ -113,6 +113,7 @@ while cap.isOpened():
                 color = (0, 0, 255)
             elif x1 > cw_x2: # 오른쪽 차량
                 alert_text = str(x1 - cw_x2) + 'm 오른쪽 방향 '
+                color = (0, 0, 255)
 
         annotator.box_label([x1, y1, x1+w, y1+h], '%s %d' % (alert_text+class_name, confidences[i] * 100), color=color)
 
