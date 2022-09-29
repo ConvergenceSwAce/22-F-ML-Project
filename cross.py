@@ -5,12 +5,12 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 
-# 횡단보도,신호등 모델
+# 횡단보도,신호등 모델 yolo v5
 MODEL_PATH = 'runs/train/exp4/weights/best.pt'
 
 img_size = 640
-conf_thres = 0.5  # confidence threshold
-iou_thres = 0.45  # NMS IOU threshold
+conf_thres = 0.5  # confidence threshold 정확도
+iou_thres = 0.45  # NMS(Non-maximum Suppression) IOU threshold
 max_det = 1000  # maximum detections per image
 classes = None  # filter by class
 agnostic_nms = False  # class-agnostic NMS
@@ -21,7 +21,7 @@ model = ckpt['ema' if ckpt.get('ema') else 'model'].float().fuse().eval()
 class_names = ['횡단보도'] # model.names
 stride = int(model.stride.max())
 
-# 차량,번호판 모델
+# 차량,번호판 모델 yolo v4 다크넷 사용
 CONFIDENCE = 0.5
 THRESHOLD = 0.3
 LABELS = ['차량', '번호판']
@@ -36,12 +36,12 @@ out = cv2.VideoWriter('data/output.mp4', fourcc, cap.get(cv2.CAP_PROP_FPS), (int
 
 while cap.isOpened():
     ret, img = cap.read()
-    if not ret:
+    if not ret:  #frame없으면 종료
         break
 
     H, W, _ = img.shape
 
-    # preprocess
+    # preprocess 전처리
     img_input = letterbox(img, img_size, stride=stride)[0]
     img_input = img_input.transpose((2, 0, 1))[::-1]
     img_input = np.ascontiguousarray(img_input)
@@ -53,7 +53,7 @@ while cap.isOpened():
     # inference 횡단보도,신호등
     pred = model(img_input, augment=False, visualize=False)[0]
 
-    # postprocess
+    # postprocess 후처리
     pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)[0]
 
     pred = pred.cpu().numpy()
@@ -73,7 +73,7 @@ while cap.isOpened():
         class_id = np.argmax(scores)
         confidence = scores[class_id]
 
-        if confidence > CONFIDENCE:
+        if confidence > CONFIDENCE: # 차량 좌표구하는곳
             cx, cy, w, h = box * np.array([W, H, W, H])
             x = cx - (w / 2)
             y = cy - (h / 2)
@@ -103,7 +103,7 @@ while cap.isOpened():
             class_name = LABELS[class_ids[i]]
             x1, y1, w, h = boxes[i]
 
-        alert_text = ''
+        alert_text = '' #TTS떄 가져올 부분
         color = (255, 0, 0) # blue
 
         annotator.box_label([x1, y1, x1+w, y1+h], '%s %d' % (alert_text+class_name, confidences[i] * 100), color=color)
