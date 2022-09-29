@@ -18,8 +18,9 @@ agnostic_nms = False  # class-agnostic NMS
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 ckpt = torch.load(MODEL_PATH, map_location=device)
 model = ckpt['ema' if ckpt.get('ema') else 'model'].float().fuse().eval()
-class_names = ['횡단보도'] # model.names
+class_names = ['횡단보도', '빨간불', '초록불'] # model.names
 stride = int(model.stride.max())
+colors = ((50, 50, 50), (0, 0, 255), (0, 255, 0)) # (gray, red, green)
 
 # 차량,번호판 모델 yolo v4 다크넷 사용
 CONFIDENCE = 0.5
@@ -69,7 +70,7 @@ while cap.isOpened():
 
     for det in output:
         box = det[:4]
-        scores = det[5:]
+        scores = det[4:]
         class_id = np.argmax(scores)
         confidence = scores[class_id]
 
@@ -87,13 +88,13 @@ while cap.isOpened():
     # Visualize
     annotator = Annotator(img.copy(), line_width=3, example=str(class_names), font='data/malgun.ttf')
 
-    cw_x1, cw_x2 = None, None # 횡단보도 좌측(cw_x1), 우측(cw_x2) 좌표
+    cw_x1, cw_x2 = 0, 0 # 횡단보도 좌측(cw_x1), 우측(cw_x2) 좌표
 
     for p in pred:
         class_name = class_names[int(p[5])]
         x1, y1, x2, y2 = p[:4]
 
-        annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100))
+        annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100), color=colors[int(p[5])])
 
         if class_name == '횡단보도':
             cw_x1, cw_x2 = x1, x2
@@ -105,6 +106,13 @@ while cap.isOpened():
 
         alert_text = '' #TTS떄 가져올 부분
         color = (255, 0, 0) # blue
+
+        if class_name == '차량':
+            if (x1+w) < (cw_x1): # 왼쪽 차량
+                alert_text = str(cw_x1 - (x1+w)) + 'm 왼쪽 방향 '
+                color = (0, 0, 255)
+            elif x1 > cw_x2: # 오른쪽 차량
+                alert_text = str(x1 - cw_x2) + 'm 오른쪽 방향 '
 
         annotator.box_label([x1, y1, x1+w, y1+h], '%s %d' % (alert_text+class_name, confidences[i] * 100), color=color)
 

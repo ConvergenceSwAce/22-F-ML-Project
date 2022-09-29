@@ -1,3 +1,5 @@
 venv
 yolov4-ANPR.weights
 __pycache__
+sample.mp4
+output.mp4
