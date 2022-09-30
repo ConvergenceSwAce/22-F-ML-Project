@@ -110,10 +110,13 @@ while cap.isOpened():
         if class_name == '차량':
             if (x1+w) < (cw_x1): # 왼쪽 차량
                 alert_text = str(cw_x1 - (x1+w)) + 'm 왼쪽 방향 '
-                color = (0, 0, 255)
+                color = (0, 0, 255) # red
             elif x1 > cw_x2: # 오른쪽 차량
                 alert_text = str(x1 - cw_x2) + 'm 오른쪽 방향 '
-                color = (0, 0, 255)
+                color = (0, 0, 255) # red
+            elif cw_x1 < x1 < cw_x2 or cw_x1 < (x1+w) < cw_x2:
+                alert_text = '차량이 횡단보도에 있습니다. '
+                color = (255, 0, 0) # blue
 
         annotator.box_label([x1, y1, x1+w, y1+h], '%s %d' % (alert_text+class_name, confidences[i] * 100), color=color)
 
