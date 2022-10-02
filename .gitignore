@@ -1,5 +1,5 @@
 venv
 yolov5s.pt
 __pycache__
-sample.mp4
-output.mp4
+sample*.mp4
+output*.mp4
