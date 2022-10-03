@@ -1,10 +1,15 @@
+from tabnanny import check
 from turtle import distance
 import torch
 import numpy as np
 import cv2
+from gtts import gTTS
+from playsound import playsound
 from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
+
+file_name = 'sample.mp3' # mp3 file name
 
 MODEL_PATH = 'runs/train/exp4/weights/best.pt'
 MODEL_PATH2 = 'yolov5s.pt'
@@ -39,6 +44,8 @@ while cap.isOpened():
     ret, img = cap.read()
     if not ret:
         break
+
+    check = False # warn check
 
     #  횡단보도 preprocess
     img_input = letterbox(img, img_size, stride=stride)[0]
@@ -134,10 +141,27 @@ while cap.isOpened():
                 alert_text = '[횡단보도]'
                 color = (0, 0, 255) # red
                 annotator.box_label([500,0,500,0], '횡단보도에 차량이 있습니다!', color=(0,0,255))
+                check = True
 
         annotator.box_label([250,0,250,0], '차량 %s 대' % (carCnt), color=(100, 0, 100))
         annotator.box_label([x3, y3, x4, y4], '%s %d' % (alert_text+class_name, float(p[4]) * 100), color=color)
     
+    text1 = '차량 %s 대' % (carCnt)
+    text2 = '횡단보도 %s 명' % (personCnt)
+    text = text1 + ' ' + text2
+    warn = '횡단보도에 차량이 있습니다'
+
+    for i in range(40):
+        if i == 0:
+            tts_ko = gTTS(text = text, lang='ko')
+            tts_ko.save(file_name)
+            playsound(file_name) # mp3 file play
+        if i/10 == 0:
+            if check == True:
+                tts_ko = gTTS(text = warn, lang='ko')
+                tts_ko.save(file_name)
+                playsound(file_name)
+
 
     result_img = annotator.result()
 
@@ -145,6 +169,6 @@ while cap.isOpened():
     # out.write(result_img)
     if cv2.waitKey(1) == ord('q'):
         break
-
+    
 cap.release()
 # out.release()
