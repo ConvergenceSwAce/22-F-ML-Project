@@ -34,11 +34,11 @@ stride2 = int(model2.stride.max())
 colors = ((50, 50, 50), (0, 0, 255), (0, 255, 0))  # (gray, red, green)
 colors2 = ((0, 255, 255), (255, 0, 100), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0))  # (yellow, purple, blue)
 
-cap = cv2.VideoCapture('data/sample.mp4')
+cap = cv2.VideoCapture(0)
 
-fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-out = cv2.VideoWriter('data/output.mp4', fourcc, cap.get(cv2.CAP_PROP_FPS),
-                      (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+# fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+# out = cv2.VideoWriter('data/output.mp4', fourcc, cap.get(cv2.CAP_PROP_FPS),
+#                       (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
 while cap.isOpened():
     ret, img = cap.read()
@@ -149,15 +149,13 @@ while cap.isOpened():
     text = text1 + ' ' + text2
     warn = '횡단보도에 차량이 있습니다'
 
-    if (i % 20 == 0):
+    if (i % 20 == 0):  # 20프레임 당 한번씩 차량, 횡단보도 위 사람 수를 읽어옴
         tts_ko = gTTS(text=text, lang='ko')
         tts_ko.save(file_name)
-        playsound(file_name)  # mp3 file play
-    if (i % 10) == 0:
+    if (i % 10) == 0:  # 10 프레임 당 한번씩 횡단보도에 차량이 있는지 확인
         if check == True:
             tts_ko = gTTS(text=warn, lang='ko')
             tts_ko.save(file_name)
-            playsound(file_name)
 
     result_img = annotator.result()
 
