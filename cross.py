@@ -1,3 +1,4 @@
+from turtle import distance
 import torch
 import numpy as np
 import cv2
@@ -95,6 +96,9 @@ while cap.isOpened():
         if class_name == '횡단보도':
             cw_x1, cw_x2 = x1, x2
 
+    personCnt = 0 # 사람 수
+    carCnt = 0 # 차량 수
+
     # 사람, 차량
     for p in pred2:
         try:
@@ -109,23 +113,31 @@ while cap.isOpened():
 
         if class_name == '사람':
             if cw_x1 < x4 < cw_x2 and y1 < y4 < y2:
-                alert_text = '사람이 횡단보도를 건너고 있습니다. '
+                personCnt += 1
+                alert_text = '[횡단보도]'
                 color = (0, 255, 0) # green
+        annotator.box_label([0,0,0,0], '횡단보도 %s 명' % (personCnt), color=(100, 100, 100))
+
 
         if class_name == '일반차량' or class_name == '버스' or class_name == '트럭' or class_name == '오토바이' or class_name == '자전거':
+            class_name = '차량'
+            carCnt += 1
+            distant1 = int(float(cw_x1 - (x4)) * 0.03)
+            distant2 = int(float(x3 - cw_x2) * 0.03)
             if x4 < cw_x1: # 왼쪽 차량
-                alert_text = str(cw_x1 - (x4)) + 'm 왼쪽 방향 '
+                alert_text = str(distant1) + 'm 왼쪽 방향 '
                 color = (255, 0, 0) # blue
             elif x3 > cw_x2: # 오른쪽 차량
-                alert_text = str(x3 - cw_x2) + 'm 오른쪽 방향 '
+                alert_text = str(distant2) + 'm 오른쪽 방향 '
                 color = (255, 0, 0) # blue
             elif cw_x1 < x3 < cw_x2 or cw_x1 < x4 < cw_x2:
-                alert_text = class_name + '이 횡단보도에 있습니다.'
+                alert_text = '[횡단보도]'
                 color = (0, 0, 255) # red
+                annotator.box_label([500,0,500,0], '횡단보도에 차량이 있습니다!', color=(0,0,255))
 
-
+        annotator.box_label([250,0,250,0], '차량 %s 대' % (carCnt), color=(100, 0, 100))
         annotator.box_label([x3, y3, x4, y4], '%s %d' % (alert_text+class_name, float(p[4]) * 100), color=color)
-
+    
 
     result_img = annotator.result()
 
