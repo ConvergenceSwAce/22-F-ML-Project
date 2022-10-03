@@ -149,10 +149,10 @@ while cap.isOpened():
     text = text1 + ' ' + text2
     warn = '횡단보도에 차량이 있습니다'
 
-    if (i % 20 == 0):
+    if (i % 20 == 0):  # 20프레임 당 한번씩 차량, 횡단보도 위 사람 수를 읽어옴
         tts_ko = gTTS(text=text, lang='ko')
         tts_ko.save(file_name)
-    if (i % 10) == 0:
+    if (i % 10) == 0:  # 10 프레임 당 한번씩 횡단보도에 차량이 있는지 확인
         if check == True:
             tts_ko = gTTS(text=warn, lang='ko')
             tts_ko.save(file_name)
