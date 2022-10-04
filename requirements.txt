@@ -40,3 +40,6 @@ thop  # FLOPs computation
 gTTS
 playsound
 PyObjC
+
+# flask --------------------------------------
+flask
