@@ -7,9 +7,6 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 
-file_name = 'sample.mp3'  # mp3 file name
-i = 0  # counter
-
 MODEL_PATH = 'runs/train/exp4/weights/best.pt'
 MODEL_PATH2 = 'yolov5s.pt'
 
@@ -44,7 +41,6 @@ while cap.isOpened():
     ret, img = cap.read()
     if not ret:
         break
-    i += 1
 
     check = False  # warn check
 
@@ -144,19 +140,27 @@ while cap.isOpened():
         annotator.box_label([250, 0, 250, 0], '차량 %s 대' % (carCnt), color=(100, 0, 100))
         annotator.box_label([x3, y3, x4, y4], '%s %d' % (alert_text + class_name, float(p[4]) * 100), color=color)
 
+    # 인식된 차량 수, 횡단보도 사람 수, 횡단보도에 차량이 있으면 warn 저장
     text1 = '차량 %s 대' % (carCnt)
     text2 = '횡단보도 %s 명' % (personCnt)
     text = text1 + ' ' + text2
     warn = '횡단보도에 차량이 있습니다'
 
-    if (i % 20 == 0):  # 20프레임 당 한번씩 차량, 횡단보도 위 사람 수를 읽어옴
-        tts_ko = gTTS(text=text, lang='ko')
-        tts_ko.save(file_name)
-    if (i % 10) == 0:  # 10 프레임 당 한번씩 횡단보도에 차량이 있는지 확인
-        if check == True:
-            tts_ko = gTTS(text=warn, lang='ko')
-            tts_ko.save(file_name)
+    # 파일 쓰기
+    f = open('notification.txt', 'w')
+    f.write(text)
+    f.close()
 
+    # warn 초기화
+    f = open('warn.txt', 'w')
+    f.write('')
+    f.close()
+
+    # 횡단보도에 차량이 있으면 warn 저장
+    if check:
+        f = open('warn.txt', 'w')
+        f.write(warn)
+        f.close()
     result_img = annotator.result()
 
     cv2.imshow('result', result_img)
