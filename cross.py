@@ -7,7 +7,6 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 
-file_name = 'sample.mp3'  # mp3 file name
 i = 0  # counter
 
 MODEL_PATH = 'runs/train/exp4/weights/best.pt'
@@ -149,14 +148,19 @@ while cap.isOpened():
     text = text1 + ' ' + text2
     warn = '횡단보도에 차량이 있습니다'
 
-    if (i % 20 == 0):  # 20프레임 당 한번씩 차량, 횡단보도 위 사람 수를 읽어옴
-        tts_ko = gTTS(text=text, lang='ko')
-        tts_ko.save(file_name)
-    if (i % 10) == 0:  # 10 프레임 당 한번씩 횡단보도에 차량이 있는지 확인
-        if check == True:
-            tts_ko = gTTS(text=warn, lang='ko')
-            tts_ko.save(file_name)
+    # 파일 쓰기
+    f = open('notification.txt', 'w')
+    f.write(text)
+    f.close()
 
+    f = open('warn.txt', 'w')
+    f.write('')
+    f.close()
+
+    if check:
+        f = open('warn.txt', 'w')
+        f.write(warn)
+        f.close()
     result_img = annotator.result()
 
     cv2.imshow('result', result_img)
