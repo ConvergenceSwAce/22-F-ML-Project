@@ -7,8 +7,6 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 
-i = 0  # counter
-
 MODEL_PATH = 'runs/train/exp4/weights/best.pt'
 MODEL_PATH2 = 'yolov5s.pt'
 
@@ -43,7 +41,6 @@ while cap.isOpened():
     ret, img = cap.read()
     if not ret:
         break
-    i += 1
 
     check = False  # warn check
 
@@ -143,6 +140,7 @@ while cap.isOpened():
         annotator.box_label([250, 0, 250, 0], '차량 %s 대' % (carCnt), color=(100, 0, 100))
         annotator.box_label([x3, y3, x4, y4], '%s %d' % (alert_text + class_name, float(p[4]) * 100), color=color)
 
+    # 인식된 차량 수, 횡단보도 사람 수, 횡단보도에 차량이 있으면 warn 저장
     text1 = '차량 %s 대' % (carCnt)
     text2 = '횡단보도 %s 명' % (personCnt)
     text = text1 + ' ' + text2
@@ -153,10 +151,12 @@ while cap.isOpened():
     f.write(text)
     f.close()
 
+    # warn 초기화
     f = open('warn.txt', 'w')
     f.write('')
     f.close()
 
+    # 횡단보도에 차량이 있으면 warn 저장
     if check:
         f = open('warn.txt', 'w')
         f.write(warn)
