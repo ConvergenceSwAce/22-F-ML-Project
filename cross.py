@@ -1,8 +1,6 @@
 import torch
 import numpy as np
 import cv2
-from gtts import gTTS
-from playsound import playsound
 from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
