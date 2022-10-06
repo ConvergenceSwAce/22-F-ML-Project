@@ -1,8 +1,8 @@
 import os
 
 path = os.getcwd()
-warnPath = path+"/warn.txt"
-notiPath = path+"/notification.txt"
+warnPath = path+"/DB/warn.txt"
+notiPath = path+"/DB/notification.txt"
 
 def notiTextRead():
     with open(notiPath, 'r', encoding='utf8') as f:
