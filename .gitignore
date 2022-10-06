@@ -4,3 +4,6 @@ __pycache__
 sample*.mp4
 output*.mp4
 .idea
+
+notification.txt
+warn.txt
