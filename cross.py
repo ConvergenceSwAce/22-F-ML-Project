@@ -29,7 +29,7 @@ stride2 = int(model2.stride.max())
 colors = ((50, 50, 50), (0, 0, 255), (0, 255, 0))  # (gray, red, green)
 colors2 = ((0, 255, 255), (255, 0, 100), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0))  # (yellow, purple, blue)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('data/sample.mp4')
 
 # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 # out = cv2.VideoWriter('data/output.mp4', fourcc, cap.get(cv2.CAP_PROP_FPS),
@@ -145,23 +145,23 @@ while cap.isOpened():
     warn = '횡단보도에 차량이 있습니다'
 
     # 파일 쓰기
-    f = open('notification.txt', 'w')
+    f = open('./DB/notification.txt', 'w')
     f.write(text)
     f.close()
 
     # warn 초기화
-    f = open('warn.txt', 'w')
+    f = open('./DB/warn.txt', 'w')
     f.write('')
     f.close()
 
     # 횡단보도에 차량이 있으면 warn 저장
     if check:
-        f = open('warn.txt', 'w')
+        f = open('./DB/warn.txt', 'w')
         f.write(warn)
         f.close()
     result_img = annotator.result()
 
-    cv2.imshow('result', result_img)
+    cv2.imshow('./DB/result', result_img)
     # out.write(result_img)
     if cv2.waitKey(1) == ord('q'):
         break
